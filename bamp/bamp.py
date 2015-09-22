@@ -11,14 +11,26 @@ def get_prefix_suffix(version, line):
     return match.groups()
 
 
-def get_version_lines(version, lines):
+def get_version_lines(version, lines, first_line_number=0):
     """
     Finds all occurences of the version number in the given list of strings and return the
-    prefixes and suffixes as a dictionary of tuples with the (1 based) line numbers as keys.
+    prefixes and suffixes as a dictionary of tuples with the line numbers as keys.
     """
     ret = {}
-    for i, line in enumerate(lines, 1):
+    for i, line in enumerate(lines, first_line_number):
         pre_suf = get_prefix_suffix(version, line)
         if not any([x is None for x in pre_suf]):
             ret[i] = pre_suf
     return ret
+
+
+def replace_versions(newversion, lines, vlines):
+    """
+    Replaces all occurences of the old version with `newversion` in `lines` list.
+    """
+    for i, line in enumerate(lines):
+        if i in vlines:
+            prefix, suffix = vlines[i]
+            yield "%s%s%s" % (prefix, newversion, suffix)
+        else:
+            yield line
